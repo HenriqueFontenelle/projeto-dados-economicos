@@ -1,0 +1,138 @@
+{
+  "title": "Panorama Econômico Brasileiro",
+  "generated_at": "2025-06-05T23:08:27.668934",
+  "period_months": 12,
+  "sections": {
+    "indicators": {
+      "ipca": {
+        "name": "Inflação (IPCA)",
+        "trend_analysis": {
+          "trend": "stable",
+          "slope": 0.002257803532712665,
+          "confidence": 0.2643194559560768,
+          "recent_change_pct": 47.36842105263159,
+          "volatility": 72.34838494921176,
+          "period_days": 9,
+          "last_value": 0.56
+        },
+        "insights": [
+          "O indicador apresenta alta volatilidade (72.3%), indicando instabilidade nos valores.",
+          "Detectados 2 valores atípicos, sugerindo eventos extraordinários no período.",
+          "A inflação está abaixo da meta inferior (3%), podendo indicar desaceleração econômica."
+        ],
+        "last_value": 0.56,
+        "last_date": "2025-03-01T00:00:00"
+      },
+      "selic": {
+        "name": "Taxa SELIC Diária",
+        "trend_analysis": {
+          "trend": "ascending",
+          "slope": 4.7299503944857424e-05,
+          "confidence": 0.8689952256668453,
+          "recent_change_pct": 33.76878023936848,
+          "volatility": 10.59086824461129,
+          "period_days": 217,
+          "last_value": 0.052531
+        },
+        "insights": [
+          "O Taxa SELIC Diária apresenta tendência de alta com variação de 33.77% no período analisado.",
+          "O indicador apresenta alta volatilidade (10.6%), indicando instabilidade nos valores.",
+          "A elevação da taxa Selic indica política monetária contracionista para combater inflação."
+        ],
+        "last_value": 0.052531,
+        "last_date": "2025-04-17T00:00:00"
+      },
+      "pib": {
+        "name": "PIB Real",
+        "trend_analysis": {
+          "trend": "stable",
+          "slope": -176.83617450174947,
+          "confidence": 0.1929031505348232,
+          "recent_change_pct": -4.1908007557632,
+          "volatility": 2.8303176184598007,
+          "period_days": 8,
+          "last_value": 966150.6
+        },
+        "insights": [],
+        "last_value": 966150.6,
+        "last_date": "2025-02-01T00:00:00"
+      },
+      "divida_pib": {
+        "name": "Dívida/PIB",
+        "trend_analysis": {
+          "trend": "stable",
+          "slope": 766.1275019017444,
+          "confidence": 0.43838735254725614,
+          "recent_change_pct": 2.4798184176430174,
+          "volatility": 0.9059069278533005,
+          "period_days": 8,
+          "last_value": 9045259.98
+        },
+        "insights": [
+          "O indicador mostra baixa volatilidade (0.9%), sugerindo comportamento estável.",
+          "A relação Dívida/PIB elevada (>80%) pode limitar o espaço fiscal do governo."
+        ],
+        "last_value": 9045259.98,
+        "last_date": "2025-02-01T00:00:00"
+      }
+    },
+    "correlations": {
+      "ipca_selic": {
+        "correlation": 0.49475386535992416,
+        "strength": "moderate",
+        "direction": "positive"
+      },
+      "ipca_divida_pib": {
+        "correlation": 0.4899717110039194,
+        "strength": "moderate",
+        "direction": "positive"
+      },
+      "selic_pib": {
+        "correlation": -0.6734076722509307,
+        "strength": "strong",
+        "direction": "negative"
+      },
+      "selic_divida_pib": {
+        "correlation": 0.5802385736424561,
+        "strength": "moderate",
+        "direction": "positive"
+      }
+    },
+    "predictions": {
+      "ipca": {
+        "forecast": [
+          {
+            "date": "2025-04-30T00:00:00",
+            "value": 0.4548000000000001
+          },
+          {
+            "date": "2025-05-31T00:00:00",
+            "value": 0.40569999999999995
+          },
+          {
+            "date": "2025-06-30T00:00:00",
+            "value": 0.4742000000000002
+          },
+          {
+            "date": "2025-07-31T00:00:00",
+            "value": 0.40569999999999995
+          },
+          {
+            "date": "2025-08-31T00:00:00",
+            "value": 0.4742000000000002
+          },
+          {
+            "date": "2025-09-30T00:00:00",
+            "value": 0.40569999999999995
+          }
+        ],
+        "trend_forecast": "descending"
+      }
+    }
+  },
+  "executive_summary": [
+    "📊 INFLAÇÃO: Mantém-se em patamares controlados dentro do regime de metas.",
+    "📈 POLÍTICA MONETÁRIA: Ciclo de alta da Selic indica postura restritiva do BC.",
+    "🔗 CORRELAÇÕES: Identificadas 1 correlações fortes entre indicadores."
+  ]
+}
