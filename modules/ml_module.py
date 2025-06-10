@@ -321,7 +321,9 @@ class MLModule(BaseModule):
                     with col3:
                         st.metric("MAE", f"{metrics.get('mae', 0):.4f}")
                     with col4:
-                        st.metric("MSE", f"{metrics.get('mse', 0):.6f}")
+                        # Tenta diferentes nomes possíveis para MSE
+                        mse_value = metrics.get('mse', metrics.get('mean_squared_error', metrics.get('MSE', 0)))
+                        st.metric("MSE", f"{mse_value:.6f}")
             except:
                 pass
         else:
@@ -371,13 +373,15 @@ class MLModule(BaseModule):
                     
                     col1, col2, col3, col4 = st.columns(4)
                     with col1:
-                        st.metric("R² Score", f"{metrics['r2']:.4f}")
+                        st.metric("R² Score", f"{metrics.get('r2', 0):.4f}")
                     with col2:
-                        st.metric("RMSE", f"{metrics['rmse']:.4f}")
+                        st.metric("RMSE", f"{metrics.get('rmse', 0):.4f}")
                     with col3:
-                        st.metric("MAE", f"{metrics['mae']:.4f}")
+                        st.metric("MAE", f"{metrics.get('mae', 0):.4f}")
                     with col4:
-                        st.metric("MSE", f"{metrics['mse']:.6f}")
+                        # Tenta diferentes nomes possíveis para MSE
+                        mse_value = metrics.get('mse', metrics.get('mean_squared_error', metrics.get('MSE', 0)))
+                        st.metric("MSE", f"{mse_value:.6f}")
                     
                     # Mostrar gráfico de predição vs real
                     prediction_plot_path = f"{self.models_dir}/{indicator}_prediction.png"

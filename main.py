@@ -63,3 +63,6 @@ except Exception as e:
 # Footer
 st.sidebar.markdown("---")
 st.sidebar.caption("Sistema Econômico BCB v2.0")
+
+# forçar atualização.
+
