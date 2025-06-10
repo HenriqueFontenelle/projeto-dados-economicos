@@ -1,0 +1,99 @@
+site_name: Sistema BCB v2.0 - Documentação
+site_description: Documentação técnica do Sistema de Análise Econômica BCB v2.0
+site_author: Squad7 - MDS 2025-1
+
+# Configuração do tema
+theme:
+  name: material
+  language: pt
+  palette:
+    # Modo claro
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Alternar para modo escuro
+    # Modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Alternar para modo claro
+  
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+
+# Estrutura de navegação
+nav:
+  - Início: index.md
+  - Documentação Técnica:
+    - Relatório Técnico: documentacao/relatorio-tecnico.md
+    - Guia de Desenvolvimento: documentacao/guia-desenvolvimento.md
+  - Desenvolvimento:
+    - Troubleshooting: desenvolvimento/troubleshooting.md
+
+# Plugins (SEM o plugin git que estava causando erro)
+plugins:
+  - search:
+      lang: pt
+
+# Extensões do Markdown (COM EMOJI CORRIGIDO)
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: Nesta página
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# CSS personalizado
+extra_css:
+  - stylesheets/extra.css
+
+# Copyright
+copyright: |
+  &copy; 2025 Squad7 - MDS

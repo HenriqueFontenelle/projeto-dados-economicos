@@ -1,0 +1,30 @@
+/* CSS personalizado para a documentação BCB */
+
+:root {
+  --md-primary-fg-color: #1f4e79;
+  --md-primary-fg-color--light: #2e86ab;
+  --md-primary-fg-color--dark: #0f2a3c;
+  --md-accent-fg-color: #ff6b6b;
+}
+
+/* Estilo personalizado para callouts */
+.md-typeset .admonition.info {
+  border-color: var(--md-primary-fg-color);
+}
+
+.md-typeset .admonition.info > .admonition-title {
+  background-color: var(--md-primary-fg-color--light);
+  color: white;
+}
+
+/* Estilo para blocos de código */
+.md-typeset pre > code {
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Destacar comandos bash */
+.md-typeset .language-bash {
+  background-color: #2d3748;
+  color: #68d391;
+}

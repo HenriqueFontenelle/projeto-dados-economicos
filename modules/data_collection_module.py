@@ -179,9 +179,11 @@ class DataCollectionModule(BaseModule):
                 # Salvar no banco
                 saved_results = {}
                 for i, (indicator, df) in enumerate(data_results.items()):
-                    if df is not None:
-                        success = db_manager.save_data(df, indicator)
+                    if df is not None and not df.empty:  # ✅ Verificação adicional
+                        success = db_manager.save_data(indicator, df)  # ✅ ORDEM CORRETA
                         saved_results[indicator] = success
+                    else:
+                        saved_results[indicator] = False  # ✅ Marcar como falha
                     
                     progress_bar.progress(0.7 + (0.3 * (i + 1) / len(data_results)))
                 
