@@ -22,3 +22,16 @@ models/
 **/.DS_Store
 .DS_Store
 **/.DS_Store
+
+# === PROJETO DADOS ECONÔMICOS ===
+# Modelos treinados (arquivos grandes)
+models/*.pkl
+models/*.joblib
+*.db
+*.sqlite
+*.sqlite3
+reports/*.html
+reports/*.json
+temp_*
+__pycache__/
+*.pyc

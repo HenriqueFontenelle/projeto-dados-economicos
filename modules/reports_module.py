@@ -1,4 +1,4 @@
-# modules/reports_module.py
+# modules/reports_module.py - VERSÃO CORRIGIDA
 import streamlit as st
 from ai_report_generator import ReportGenerator, generate_quick_report
 from config import config
@@ -364,14 +364,14 @@ class ReportsModule(BaseModule):
                         for i, insight in enumerate(data['insights'], 1):
                             st.markdown(f"{i}. {insight}")
                     
-                    # Dados técnicos
+                    # Dados técnicos - REMOVIDO O EXPANDER ANINHADO
                     if 'trend_analysis' in data:
                         ta = data['trend_analysis']
                         
-                        with st.expander("📈 Dados Técnicos"):
-                            st.write(f"**Volatilidade:** {ta.get('volatility', 0):.2f}%")
-                            st.write(f"**Período analisado:** {ta.get('period_days', 0)} dias")
-                            st.write(f"**Slope:** {ta.get('slope', 0):.6f}")
+                        st.markdown("**📈 Dados Técnicos:**")
+                        st.write(f"**Volatilidade:** {ta.get('volatility', 0):.2f}%")
+                        st.write(f"**Período analisado:** {ta.get('period_days', 0)} dias")
+                        st.write(f"**Slope:** {ta.get('slope', 0):.6f}")
         
         # Correlações
         if 'sections' in report_data and 'correlations' in report_data['sections']:
@@ -421,11 +421,16 @@ class ReportsModule(BaseModule):
                     st.markdown(f"{trend_emoji} **{indicator.upper()}**: Tendência {trend_forecast} prevista")
         
         # Metadados do relatório
-        with st.expander("ℹ️ Informações do Relatório"):
+        st.subheader("ℹ️ Informações do Relatório")
+        col1, col2 = st.columns(2)
+        
+        with col1:
             st.write(f"**Título:** {report_data.get('title', 'N/A')}")
-            st.write(f"**Gerado em:** {report_data.get('generated_at', 'N/A')}")
-            st.write(f"**Período analisado:** {report_data.get('period_months', 'N/A')} meses")
             st.write(f"**Tipo:** {report_data.get('report_type', 'economic_overview')}")
+        
+        with col2:
+            st.write(f"**Gerado em:** {report_data.get('generated_at', 'N/A')}")
+            st.write(f"**Período:** {report_data.get('period_months', 'N/A')} meses")
     
     def _show_previous_reports(self):
         """Mostra relatórios anteriores gerados"""

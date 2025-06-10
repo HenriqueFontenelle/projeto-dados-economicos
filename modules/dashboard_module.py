@@ -23,7 +23,7 @@ class DashboardModule(BaseModule):
         
         st.markdown("""
         Visualize e analise os principais indicadores econômicos brasileiros com gráficos interativos
-        e estatísticas em tempo real.
+        e estatísticas em tempo real. **Agora com suporte a até 10 anos de dados históricos!**
         """)
         
         # Verificar se há dados disponíveis
@@ -44,15 +44,18 @@ class DashboardModule(BaseModule):
         time_period = st.session_state.get('time_period', 24)
         chart_type = st.session_state.get('chart_type', 'line')
         
+        # ✅ CONVERTER time_period para months (0 = todo período)
+        months = time_period if time_period > 0 else 0
+        
         # Mostrar gráficos
         if selected_indicators:
             if len(selected_indicators) == 1:
-                self._render_single_indicator(selected_indicators[0], time_period, chart_type)
+                self._render_single_indicator(selected_indicators[0], months, chart_type)
             else:
-                self._render_multiple_indicators(selected_indicators, time_period, chart_type)
+                self._render_multiple_indicators(selected_indicators, months, chart_type)
             
             # Estatísticas comparativas
-            self._render_statistics(selected_indicators, time_period)
+            self._render_statistics(selected_indicators, months)
         else:
             st.info("Selecione pelo menos um indicador na barra lateral.")
     
@@ -83,12 +86,23 @@ class DashboardModule(BaseModule):
         )
         st.session_state.selected_indicators = selected_indicators
         
-        # Período de tempo
+        # ✅ PERÍODO DE TEMPO EXPANDIDO PARA 10 ANOS
+        period_options = {
+            3: "Últimos 3 meses",
+            6: "Últimos 6 meses", 
+            12: "Último ano",
+            24: "Últimos 2 anos",
+            36: "Últimos 3 anos",
+            60: "Últimos 5 anos",
+            120: "Últimos 10 anos",
+            0: "Todo o período disponível"  # Opção para todos os dados
+        }
+        
         time_period = st.sidebar.selectbox(
             "Período",
-            options=[6, 12, 24, 36, 60],
-            index=1,
-            format_func=lambda x: f"Últimos {x} meses"
+            options=list(period_options.keys()),
+            index=3,  # Padrão: 2 anos
+            format_func=lambda x: period_options[x]
         )
         st.session_state.time_period = time_period
         
@@ -100,16 +114,33 @@ class DashboardModule(BaseModule):
         )
         st.session_state.chart_type = chart_type
         
-        # Opções avançadas
+        # ✅ OPÇÕES AVANÇADAS MELHORADAS
         with st.sidebar.expander("🔧 Opções Avançadas"):
             show_trend = st.checkbox("Mostrar linha de tendência", value=True)
             show_stats = st.checkbox("Mostrar estatísticas", value=True)
             normalize_data = st.checkbox("Normalizar dados", value=False)
             
+            # ✅ NOVA OPÇÃO: Agregação para períodos longos
+            if time_period >= 60:  # Para períodos de 5+ anos
+                aggregation = st.selectbox(
+                    "Agregação de dados",
+                    options=['none', 'monthly', 'quarterly', 'yearly'],
+                    index=1,  # Padrão: mensal
+                    format_func=lambda x: {
+                        'none': 'Todos os pontos',
+                        'monthly': 'Média mensal',
+                        'quarterly': 'Média trimestral', 
+                        'yearly': 'Média anual'
+                    }[x]
+                )
+            else:
+                aggregation = 'none'
+            
             st.session_state.update({
                 'show_trend': show_trend,
                 'show_stats': show_stats,
-                'normalize_data': normalize_data
+                'normalize_data': normalize_data,
+                'aggregation': aggregation
             })
     
     def _render_single_indicator(self, indicator: str, months: int, chart_type: str):
@@ -120,7 +151,14 @@ class DashboardModule(BaseModule):
             st.error(f"Não há dados disponíveis para {self.indicator_names.get(indicator, indicator)}")
             return
         
-        st.subheader(f"📈 {self.indicator_names.get(indicator, indicator)}")
+        # ✅ MOSTRAR INFORMAÇÕES DO PERÍODO
+        period_info = self._get_period_info(data, months)
+        st.subheader(f"📈 {self.indicator_names.get(indicator, indicator)} - {period_info}")
+        
+        # ✅ ADICIONAR INFO SOBRE AGREGAÇÃO
+        aggregation = st.session_state.get('aggregation', 'none')
+        if aggregation != 'none':
+            st.info(f"ℹ️ Dados agregados por {aggregation} para melhor visualização")
         
         # Gráfico principal
         fig = self._create_chart(data, indicator, chart_type)
@@ -143,12 +181,70 @@ class DashboardModule(BaseModule):
         with col4:
             st.metric("Mínimo", f"{data['value'].min():.4f}")
         
+        # ✅ ADICIONAR ESTATÍSTICAS HISTÓRICAS PARA PERÍODOS LONGOS
+        if months >= 60:  # Para 5+ anos, mostrar análise histórica
+            self._render_historical_analysis(data, indicator)
+        
         # Tabela de dados recentes
         if st.session_state.get('show_stats', True):
             with st.expander("📋 Dados Recentes"):
                 recent_data = data.tail(10).sort_values('date', ascending=False)
                 recent_data['date'] = recent_data['date'].dt.strftime('%d/%m/%Y')
                 st.dataframe(recent_data[['date', 'value']], use_container_width=True)
+
+
+    def _get_period_info(self, data: pd.DataFrame, months: int) -> str:
+        """Retorna informação sobre o período dos dados"""
+        
+        if months == 0:
+            return "Todo o período disponível"
+        
+        start_date = data['date'].min().strftime('%m/%Y')
+        end_date = data['date'].max().strftime('%m/%Y')
+        total_points = len(data)
+        
+        return f"{start_date} a {end_date} ({total_points} pontos)"
+
+    def _render_historical_analysis(self, data: pd.DataFrame, indicator: str):
+        """Renderiza análise histórica para períodos longos"""
+        
+        st.markdown("#### 📊 Análise Histórica")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Estatísticas por ano
+            data_yearly = data.copy()
+            data_yearly['year'] = data_yearly['date'].dt.year
+            yearly_stats = data_yearly.groupby('year')['value'].agg([
+                'mean', 'min', 'max', 'std'
+            ]).round(4)
+            
+            st.markdown("**📅 Estatísticas Anuais:**")
+            st.dataframe(yearly_stats, use_container_width=True)
+        
+        with col2:
+            # Volatilidade por período
+            data_monthly = data.copy()
+            data_monthly['month'] = data_monthly['date'].dt.to_period('M')
+            monthly_vol = data_monthly.groupby('month')['value'].std()
+            
+            avg_volatility = monthly_vol.mean()
+            max_volatility = monthly_vol.max()
+            
+            st.markdown("**📈 Análise de Volatilidade:**")
+            st.metric("Volatilidade Média", f"{avg_volatility:.4f}")
+            st.metric("Volatilidade Máxima", f"{max_volatility:.4f}")
+            
+            # Período de maior/menor valor
+            max_idx = data['value'].idxmax()
+            min_idx = data['value'].idxmin()
+            
+            st.markdown("**🏆 Extremos Históricos:**")
+            st.write(f"Maior valor: {data.loc[max_idx, 'value']:.4f} em {data.loc[max_idx, 'date'].strftime('%m/%Y')}")
+            st.write(f"Menor valor: {data.loc[min_idx, 'value']:.4f} em {data.loc[min_idx, 'date'].strftime('%m/%Y')}")
+
+
     
     def _render_multiple_indicators(self, indicators: list, months: int, chart_type: str):
         """Renderiza visualização para múltiplos indicadores"""
@@ -267,25 +363,80 @@ class DashboardModule(BaseModule):
         """Carrega dados de um indicador para o período especificado"""
         
         try:
-            # Calcular data de início
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=30 * months)
-            
-            # Carregar dados
-            data = self.db_manager.load_data(
-                indicator,
-                start_date.strftime('%Y-%m-%d'),
-                end_date.strftime('%Y-%m-%d')
-            )
+            # ✅ CARREGAR TODOS OS DADOS SE months = 0
+            if months == 0:
+                # Carregar todo o período disponível
+                data = self.db_manager.load_data(indicator)
+            else:
+                # Carregar período específico
+                end_date = datetime.now()
+                start_date = end_date - timedelta(days=30 * months)
+                
+                data = self.db_manager.load_data(
+                    indicator,
+                    start_date.strftime('%Y-%m-%d'),
+                    end_date.strftime('%Y-%m-%d')
+                )
             
             if data is not None and not data.empty:
+                # Garantir que a coluna date seja datetime
+                data['date'] = pd.to_datetime(data['date'])
                 data = data.sort_values('date')
+                
+                # ✅ APLICAR AGREGAÇÃO SE NECESSÁRIO
+                aggregation = st.session_state.get('aggregation', 'none')
+                if aggregation != 'none':
+                    data = self._aggregate_data(data, aggregation)
+                
                 return data
             
         except Exception as e:
             logger.error(f"Erro ao carregar dados de {indicator}: {e}")
+            st.error(f"🐛 Debug: Erro ao carregar {indicator}: {e}")
         
         return None
+    
+
+    def _aggregate_data(self, data: pd.DataFrame, aggregation: str) -> pd.DataFrame:
+        """Agrega dados por período para facilitar visualização de séries longas"""
+        
+        if data is None or data.empty:
+            return data
+        
+        try:
+            # Definir frequência de agregação
+            freq_map = {
+                'monthly': 'M',
+                'quarterly': 'Q', 
+                'yearly': 'Y'
+            }
+            
+            freq = freq_map.get(aggregation, 'M')
+            
+            # Configurar data como índice
+            data_copy = data.copy()
+            data_copy.set_index('date', inplace=True)
+            
+            # Agregar por média
+            aggregated = data_copy.resample(freq)['value'].agg([
+                ('value', 'mean'),
+                ('min_value', 'min'),
+                ('max_value', 'max'),
+                ('count', 'count')
+            ]).reset_index()
+            
+            # Manter apenas registros com dados suficientes
+            aggregated = aggregated[aggregated['count'] > 0]
+            
+            # Retornar formato original
+            result = aggregated[['date', 'value']].copy()
+            result['aggregation'] = aggregation
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Erro na agregação: {e}")
+            return data
     
     def _create_chart(self, data: pd.DataFrame, indicator: str, chart_type: str):
         """Cria gráfico para um indicador"""
